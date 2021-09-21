@@ -12,7 +12,6 @@
         localStorage.setItem("PT_TOKEN", token)
       }
     }
-    console.log(token)
   }
 </script>
 
