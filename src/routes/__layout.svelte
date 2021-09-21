@@ -1,5 +1,19 @@
 <script>
   import "../app.postcss";
+
+  if (typeof localStorage !== "undefined") {
+    let token = localStorage.getItem("PT_TOKEN")
+    if (!token) {
+      let promptResult = prompt("Enter your tracker token")
+      promptResult = promptResult || ""
+      promptResult = promptResult.trim()
+      if (promptResult.length) {
+        token = promptResult
+        localStorage.setItem("PT_TOKEN", token)
+      }
+    }
+    console.log(token)
+  }
 </script>
 
 <div>
