@@ -1,38 +1,5 @@
 <script>
   import "../app.postcss";
-
-  let token = null
-
-  if (typeof localStorage !== "undefined") {
-    token = localStorage.getItem("PT_TOKEN")
-    if (!token) {
-      let promptResult = prompt("Enter your tracker token")
-      promptResult = promptResult || ""
-      promptResult = promptResult.trim()
-      if (promptResult.length) {
-        token = promptResult
-        localStorage.setItem("PT_TOKEN", token)
-      }
-    }
-  }
-
-  let activity = []
-
-  async function fetchActivity() {
-    let apiBase = "https://www.pivotaltracker.com/services/v5"
-    let queryOpts = { limit: 500, offset: 0 }
-    let queryParams = new URLSearchParams(queryOpts)
-    let url = `${apiBase}/workspaces/865796/activity?${queryParams}`
-    let headers = { "X-TrackerToken": token }
-    let result = await fetch(url, { headers })
-    activity = await result.json()
-  }
-
-  $: if (token && token.length) {
-    fetchActivity()
-  }
-
-  $: console.log("activity =", activity)
 </script>
 
 <div>
