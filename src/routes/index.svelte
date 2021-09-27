@@ -1,27 +1,14 @@
 <script>
   import { format, formatDistanceToNow } from "date-fns"
   import { pivotalTrackerErrors } from "$lib/stores/errors"
+  import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
+  import { browser } from "$app/env"
   import { goto } from "$app/navigation"
 
-  let token = null
-
-  if (typeof localStorage !== "undefined") {
-    token = localStorage.getItem("PT_TOKEN")
-    if (!token) {
-      goto("/settings")
-    }
-  }
-
   let activityItems = []
+  let token = $trackerSettings.apiKey
 
   async function fetchActivities() {
-    if (typeof localStorage !== "undefined") {
-      const activities = localStorage.getItem("ACTIVITIES") || ""
-      try {
-        activityItems = JSON.parse(activities)
-      } catch (_err) {}
-    }
-
     if (activityItems.length) {
       return
     }
@@ -36,12 +23,11 @@
 
     if (result.kind && result.kind === "error") {
       $pivotalTrackerErrors[result.code] = result
-      goto("/settings")
-      return
+      return goto("/settings")
     }
 
     activityItems = result
-    localStorage.setItem("ACTIVITIES", JSON.stringify(activityItems))
+    $trackerSettings.activityItems = result
   }
 
   function date(item) {
@@ -49,8 +35,19 @@
     return `<span class='relative-date'>${formatDistanceToNow(oa)}</span> ago on <em>${format(oa, 'yyyy-MM-dd')}</em>`
   }
 
-  $: if (token && token.length) {
-    fetchActivities()
+  $: if (browser) {
+    function load() {
+      if (!token) {
+        return goto("/settings")
+      }
+
+      activityItems = $trackerSettings.activityItems
+
+      if (token.length) {
+        fetchActivities()
+      }
+    }
+    load()
   }
 
   $: console.log("activityItems =", activityItems)

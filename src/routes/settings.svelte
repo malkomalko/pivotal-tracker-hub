@@ -1,24 +1,16 @@
 <script>
   import { pivotalTrackerErrors } from "$lib/stores/errors"
-
-  let hasToken = false
-  let token = ""
+  import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
   const INVALID_TOKEN = "invalid_authentication"
 
-  if (typeof localStorage !== "undefined") {
-    token = localStorage.getItem("PT_TOKEN")
-    if (token) {
-      hasToken = true
-    }
-  }
+  let token = $trackerSettings.apiKey || ""
 
   function updateToken(e) {
     token = (e.target.value || "").trim()
     if (token.length) {
-      localStorage.setItem("PT_TOKEN", token)
+      $trackerSettings.apiKey = token
       $pivotalTrackerErrors[INVALID_TOKEN] = null
-      hasToken = true
     }
   }
 </script>
