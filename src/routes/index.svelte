@@ -17,7 +17,7 @@
 
 <div>
   <ActivityHeader />
-  <ul role="list" class="divide-y divide-gray-200">
+  <ul role="list" class="activity-list divide-y divide-gray-200 overflow-auto">
     {#each activityItems as item}
       <ActivityItem item={item} />
     {/each}
@@ -27,5 +27,8 @@
 <style>
   :global(.relative-date) {
     font-weight: bold;
+  }
+  ul.activity-list {
+    height: 400px;
   }
 </style>
