@@ -1,5 +1,40 @@
+<script context="module">
+  export async function load({ page }) {
+    let currentPath = page.path
+    let header = ""
+
+    switch(page.path) {
+      case "/":
+        header = "Dashboard"
+        break;
+      case "/settings":
+        header = "Settings"
+        break;
+      default:
+        header = ""
+    }
+
+    return {
+      status: 200,
+      props: {
+        currentPath,
+        header
+      }
+    }
+  }
+</script>
+
 <script>
   import "../app.postcss";
+
+  export let currentPath
+  export let header
+
+  function navClasses(path, currentPath) {
+    return path === currentPath
+      ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+      : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+  }
 </script>
 
 <div>
@@ -11,7 +46,8 @@
             <div class="flex items-center">
               <div class="hidden md:block">
                 <div class="flex items-baseline space-x-4">
-                  <a href="/" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
+                  <a href="/" class={navClasses("/", currentPath)} aria-current="page">Dashboard</a>
+                  <a href="/settings" class={navClasses("/settings", currentPath)}>Settings</a>
                 </div>
               </div>
             </div>
@@ -22,7 +58,7 @@
     <header class="py-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold text-white">
-          Dashboard
+          {header}
         </h1>
       </div>
     </header>

@@ -52,7 +52,6 @@
   $: console.log("activityItems =", activityItems)
 </script>
 
-<!-- This example requires Tailwind CSS v2.0+ -->
 <div>
   <ul role="list" class="divide-y divide-gray-200">
     {#each activityItems as item}
