@@ -28,6 +28,10 @@ export async function fetchActivities(page) {
     return goto("/settings")
   }
 
+  if (page == null) {
+    set(trackerSettings, "currentPage", 0)
+  }
+
   const workspaceId = get(trackerSettings, "workspaceId")
   if (!workspaceId || !workspaceId.trim().length) {
     set(pivotalTrackerErrors, "missing_workspace_id", {
