@@ -1,4 +1,5 @@
 <script>
+  import ActivityHeader from "$lib/components/ActivityHeader.svelte"
   import ActivityItem from "$lib/components/ActivityItem.svelte"
   import { fetchActivities } from "$lib/domain/pivotalTrackerApi"
   import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
@@ -12,11 +13,10 @@
       fetchActivities()
     }
   }
-
-  $: console.log("activityItems =", activityItems)
 </script>
 
 <div>
+  <ActivityHeader />
   <ul role="list" class="divide-y divide-gray-200">
     {#each activityItems as item}
       <ActivityItem item={item} />
@@ -25,7 +25,7 @@
 </div>
 
 <style>
-:global(.relative-date) {
-  font-weight: bold;
-}
+  :global(.relative-date) {
+    font-weight: bold;
+  }
 </style>
