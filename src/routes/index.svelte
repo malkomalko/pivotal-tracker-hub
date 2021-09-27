@@ -1,53 +1,21 @@
 <script>
   import { format, formatDistanceToNow } from "date-fns"
-  import { pivotalTrackerErrors } from "$lib/stores/errors"
+  import { fetchActivities } from "$lib/domain/pivotalTrackerApi"
   import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
   import { browser } from "$app/env"
-  import { goto } from "$app/navigation"
 
   let activityItems = []
-  let token = $trackerSettings.apiKey
-
-  async function fetchActivities() {
-    if (activityItems.length) {
-      return
-    }
-
-    let apiBase = "https://www.pivotaltracker.com/services/v5"
-    let queryOpts = { limit: 500, offset: 0 }
-    let queryParams = new URLSearchParams(queryOpts)
-    let url = `${apiBase}/workspaces/865796/activity?${queryParams}`
-    let headers = { "X-TrackerToken": token }
-    let result = await fetch(url, { headers })
-    result = await result.json()
-
-    if (result.kind && result.kind === "error") {
-      $pivotalTrackerErrors[result.code] = result
-      return goto("/settings")
-    }
-
-    activityItems = result
-    $trackerSettings.activityItems = result
-  }
 
   function date(item) {
     let oa = new Date(item.occurred_at)
     return `<span class='relative-date'>${formatDistanceToNow(oa)}</span> ago on <em>${format(oa, 'yyyy-MM-dd')}</em>`
   }
 
-  $: if (browser) {
-    function load() {
-      if (!token) {
-        return goto("/settings")
-      }
-
-      activityItems = $trackerSettings.activityItems
-
-      if (token.length) {
-        fetchActivities()
-      }
+  $: {
+    activityItems = $trackerSettings.activityItems || []
+    if (browser && !activityItems.length) {
+      fetchActivities()
     }
-    load()
   }
 
   $: console.log("activityItems =", activityItems)
