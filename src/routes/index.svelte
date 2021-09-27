@@ -1,18 +1,14 @@
 <script>
   import { format, formatDistanceToNow } from "date-fns"
+  import { pivotalTrackerErrors } from "$lib/stores/errors"
+  import { goto } from "$app/navigation"
 
   let token = null
 
   if (typeof localStorage !== "undefined") {
     token = localStorage.getItem("PT_TOKEN")
     if (!token) {
-      let promptResult = prompt("Enter your tracker token")
-      promptResult = promptResult || ""
-      promptResult = promptResult.trim()
-      if (promptResult.length) {
-        token = promptResult
-        localStorage.setItem("PT_TOKEN", token)
-      }
+      goto("/settings")
     }
   }
 
@@ -36,7 +32,15 @@
     let url = `${apiBase}/workspaces/865796/activity?${queryParams}`
     let headers = { "X-TrackerToken": token }
     let result = await fetch(url, { headers })
-    activityItems = await result.json()
+    result = await result.json()
+
+    if (result.kind && result.kind === "error") {
+      $pivotalTrackerErrors[result.code] = result
+      goto("/settings")
+      return
+    }
+
+    activityItems = result
     localStorage.setItem("ACTIVITIES", JSON.stringify(activityItems))
   }
 
