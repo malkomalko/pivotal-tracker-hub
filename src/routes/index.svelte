@@ -1,11 +1,17 @@
 <script>
+  import ActivityFooter from "$lib/components/ActivityFooter.svelte"
   import ActivityHeader from "$lib/components/ActivityHeader.svelte"
   import ActivityItem from "$lib/components/ActivityItem.svelte"
   import { fetchActivities } from "$lib/domain/pivotalTrackerApi"
   import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
   import { browser } from "$app/env"
+  import { onMount } from "svelte"
 
   let activityItems = []
+
+  onMount(() => {
+    $trackerSettings.currentPage = 0
+  })
 
   $: {
     activityItems = $trackerSettings.activityItems || []
@@ -22,6 +28,7 @@
       <ActivityItem item={item} />
     {/each}
   </ul>
+  <ActivityFooter />
 </div>
 
 <style>

@@ -1,25 +1,10 @@
 import { goto } from "$app/navigation"
 import { pivotalTrackerErrors } from "$lib/stores/errors"
+import { get, set } from "$lib/stores/helpers"
 import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
 const apiBase = "https://www.pivotaltracker.com/services/v5"
-const PER_PAGE = 100
-
-function get(writableStore, key) {
-  let value = null
-  writableStore.update(s => {
-    value = s[key]
-    return s
-  })
-  return value
-}
-
-function set(writableStore, key, value) {
-  writableStore.update(s => {
-    s[key] = value
-    return s
-  })
-}
+export const PER_PAGE = 100
 
 async function activitiesForPage(apiKey, workspaceId, page) {
   let queryOpts = { limit: PER_PAGE, offset: PER_PAGE * page }
@@ -37,7 +22,7 @@ async function activitiesForPage(apiKey, workspaceId, page) {
   return result
 }
 
-export async function fetchActivities() {
+export async function fetchActivities(page) {
   const apiKey = get(trackerSettings, "apiKey")
   if (!apiKey) {
     return goto("/settings")
@@ -51,6 +36,6 @@ export async function fetchActivities() {
     return goto("/settings")
   }
 
-  const result = await activitiesForPage(apiKey, workspaceId, 0)
+  const result = await activitiesForPage(apiKey, workspaceId, page || 0)
   set(trackerSettings, "activityItems", result)
 }
