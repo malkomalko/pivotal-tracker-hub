@@ -10,18 +10,14 @@
 
   function updateToken(e) {
     token = (e.target.value || "").trim()
-    if (token.length) {
-      $trackerSettings.apiKey = token
-      $pivotalTrackerErrors[INVALID_TOKEN] = null
-    }
+    $trackerSettings.apiKey = token
+    $pivotalTrackerErrors[INVALID_TOKEN] = null
   }
 
   function updateWorkspaceId(e) {
     workspaceId = (e.target.value || "").trim()
-    if (workspaceId.length) {
-      $trackerSettings.workspaceId = workspaceId
-      $pivotalTrackerErrors[MISSING_WORKSPACE_ID] = null
-    }
+    $trackerSettings.workspaceId = workspaceId
+    $pivotalTrackerErrors[MISSING_WORKSPACE_ID] = null
   }
 </script>
 

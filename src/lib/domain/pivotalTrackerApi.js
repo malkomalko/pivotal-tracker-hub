@@ -4,15 +4,46 @@ import { get, set } from "$lib/stores/helpers"
 import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
 const apiBase = "https://www.pivotaltracker.com/services/v5"
+const DEBUG_REQUEST = true
 export const PER_PAGE = 100
 
-async function activitiesForPage(apiKey, workspaceId, page) {
+async function request(url, headers) {
+  let result = await fetch(url, { headers })
+  result = await result.json()
+
+  if (DEBUG_REQUEST) {
+    console.log(`${url} =`, result)
+  }
+
+  return result
+}
+
+function wrap(fn) {
+  return function(...args) {
+    const apiKey = get(trackerSettings, "apiKey")
+    if (!apiKey) {
+      return goto("/settings")
+    }
+
+    const workspaceId = get(trackerSettings, "workspaceId")
+    if (!workspaceId || !workspaceId.trim().length) {
+      set(pivotalTrackerErrors, "missing_workspace_id", {
+        error: "Please select a workspace or set a workspace id"
+      })
+      return goto("/settings")
+    }
+
+    let headers = { "X-TrackerToken": apiKey }
+
+    return fn(headers, workspaceId, ...args)
+  }
+}
+
+async function activitiesForPage(headers, workspaceId, page) {
   let queryOpts = { limit: PER_PAGE, offset: PER_PAGE * page }
   let queryParams = new URLSearchParams(queryOpts)
   let url = `${apiBase}/workspaces/${workspaceId}/activity?${queryParams}`
-  let headers = { "X-TrackerToken": apiKey }
-  let result = await fetch(url, { headers })
-  result = await result.json()
+  let result = await request(url, headers)
 
   if (result.kind && result.kind === "error") {
     set(pivotalTrackerErrors, result.code, result)
@@ -22,24 +53,15 @@ async function activitiesForPage(apiKey, workspaceId, page) {
   return result
 }
 
-export async function getActivities(page) {
-  const apiKey = get(trackerSettings, "apiKey")
-  if (!apiKey) {
-    return goto("/settings")
-  }
-
+export const getActivities = wrap(async (headers, workspaceId, page) => {
   if (page == null) {
     set(trackerSettings, "currentPage", 0)
   }
 
-  const workspaceId = get(trackerSettings, "workspaceId")
-  if (!workspaceId || !workspaceId.trim().length) {
-    set(pivotalTrackerErrors, "missing_workspace_id", {
-      error: "Please select a workspace or set a workspace id"
-    })
-    return goto("/settings")
-  }
-
-  const result = await activitiesForPage(apiKey, workspaceId, page || 0)
+  const result = await activitiesForPage(headers, workspaceId, page || 0)
   set(trackerSettings, "activityItems", result)
-}
+})
+
+export const getWorkspace = wrap(async (headers, workspaceId) => {
+
+})
