@@ -7,11 +7,20 @@ import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 const apiBase = "https://www.pivotaltracker.com/services/v5"
 const DEBUG_REQUEST = false
 const INCLUDE_STORY_TRANSITIONS = false
+const PROFILE_REQUEST_TIME = true
 export const PER_PAGE = 100
 
 async function request(url, headers) {
+  if (PROFILE_REQUEST_TIME) {
+    console.time(url)
+  }
+
   let result = await fetch(url, { headers })
   result = await result.json()
+
+  if (PROFILE_REQUEST_TIME) {
+    console.timeEnd(url)
+  }
 
   if (DEBUG_REQUEST) {
     console.log(`${url} =`, result)
@@ -67,9 +76,9 @@ export const getActivities = wrap(async (headers, workspaceId, page) => {
 export const getWorkspace = wrap(async (headers, workspaceId) => {
   let storyFields = ":default,branches,owners,pull_requests"
   // NOTE: Adding the following transition and cycle based time fields will
-  // add multiple seconds to a request.
+  // add multiple seconds (~ 6-8 depending on size) to a request.
   if (INCLUDE_STORY_TRANSITIONS) {
-    storyFields += "cycle_time_details,transitions"
+    storyFields += ",cycle_time_details,transitions"
   }
   let fields = `projects(:default,stories(${storyFields}))`
   let url = `${apiBase}/my/workspaces/${workspaceId}?fields=${fields}`
