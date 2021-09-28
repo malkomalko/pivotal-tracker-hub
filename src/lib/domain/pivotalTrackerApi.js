@@ -6,6 +6,7 @@ import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
 const apiBase = "https://www.pivotaltracker.com/services/v5"
 const DEBUG_REQUEST = false
+const INCLUDE_STORY_TRANSITIONS = false
 export const PER_PAGE = 100
 
 async function request(url, headers) {
@@ -64,9 +65,20 @@ export const getActivities = wrap(async (headers, workspaceId, page) => {
 })
 
 export const getWorkspace = wrap(async (headers, workspaceId) => {
-  let fields = "projects(stories)"
+  let storyFields = ":default,branches,owners,pull_requests"
+  if (INCLUDE_STORY_TRANSITIONS) {
+    storyFields += "cycle_time_details,transitions"
+  }
+  let fields = `projects(:default,stories(${storyFields}))`
   let url = `${apiBase}/my/workspaces/${workspaceId}?fields=${fields}`
-  let result = await request(url, headers)
+
+  let result = {}
+
+  try {
+    result = await request(url, headers)
+  } catch (err) {
+    return { error: err }
+  }
 
   return result
 })
