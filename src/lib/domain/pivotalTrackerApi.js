@@ -1,10 +1,11 @@
+import { browser } from "$app/env"
 import { goto } from "$app/navigation"
 import { pivotalTrackerErrors } from "$lib/stores/errors"
 import { get, set } from "$lib/stores/helpers"
 import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
 const apiBase = "https://www.pivotaltracker.com/services/v5"
-const DEBUG_REQUEST = true
+const DEBUG_REQUEST = false
 export const PER_PAGE = 100
 
 async function request(url, headers) {
@@ -63,5 +64,15 @@ export const getActivities = wrap(async (headers, workspaceId, page) => {
 })
 
 export const getWorkspace = wrap(async (headers, workspaceId) => {
+  let url = `${apiBase}/my/workspaces/${workspaceId}`
+  let result = await request(url, headers)
 
+  return result
 })
+
+if (browser) {
+  window.pt = {
+    getActivities,
+    getWorkspace,
+  }
+}
