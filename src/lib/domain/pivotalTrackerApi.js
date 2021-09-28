@@ -66,6 +66,8 @@ export const getActivities = wrap(async (headers, workspaceId, page) => {
 
 export const getWorkspace = wrap(async (headers, workspaceId) => {
   let storyFields = ":default,branches,owners,pull_requests"
+  // NOTE: Adding the following transition and cycle based time fields will
+  // add multiple seconds to a request.
   if (INCLUDE_STORY_TRANSITIONS) {
     storyFields += "cycle_time_details,transitions"
   }
