@@ -1,5 +1,5 @@
 <script>
-  import { PER_PAGE, fetchActivities } from "$lib/domain/pivotalTrackerApi"
+  import { PER_PAGE, getActivities } from "$lib/domain/pivotalTrackerApi"
   import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
 
   let from = null
@@ -8,7 +8,7 @@
 
   function next() {
     $trackerSettings.currentPage = currentPage + 1
-    fetchActivities($trackerSettings.currentPage)
+    getActivities($trackerSettings.currentPage)
   }
 
   function prev() {
@@ -17,7 +17,7 @@
     }
 
     $trackerSettings.currentPage = currentPage - 1
-    fetchActivities($trackerSettings.currentPage)
+    getActivities($trackerSettings.currentPage)
   }
 
   $: currentPage = $trackerSettings.currentPage || 0

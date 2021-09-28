@@ -2,7 +2,7 @@
   import ActivityFooter from "$lib/components/ActivityFooter.svelte"
   import ActivityHeader from "$lib/components/ActivityHeader.svelte"
   import ActivityItem from "$lib/components/ActivityItem.svelte"
-  import { fetchActivities } from "$lib/domain/pivotalTrackerApi"
+  import { getActivities } from "$lib/domain/pivotalTrackerApi"
   import { settings as trackerSettings } from "$lib/stores/pivotalTracker"
   import { browser } from "$app/env"
   import { onMount } from "svelte"
@@ -16,7 +16,7 @@
   $: {
     activityItems = $trackerSettings.activityItems || []
     if (browser && !activityItems.length) {
-      fetchActivities()
+      getActivities()
     }
   }
 </script>

@@ -22,7 +22,7 @@ async function activitiesForPage(apiKey, workspaceId, page) {
   return result
 }
 
-export async function fetchActivities(page) {
+export async function getActivities(page) {
   const apiKey = get(trackerSettings, "apiKey")
   if (!apiKey) {
     return goto("/settings")

@@ -1,8 +1,8 @@
 <script>
-  import { fetchActivities } from "$lib/domain/pivotalTrackerApi"
+  import { getActivities } from "$lib/domain/pivotalTrackerApi"
 
   function refresh() {
-    fetchActivities()
+    getActivities()
   }
 </script>
 
