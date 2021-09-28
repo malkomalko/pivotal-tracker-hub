@@ -64,7 +64,7 @@ export const getActivities = wrap(async (headers, workspaceId, page) => {
 })
 
 export const getWorkspace = wrap(async (headers, workspaceId) => {
-  let fields = "projects"
+  let fields = "projects(stories)"
   let url = `${apiBase}/my/workspaces/${workspaceId}?fields=${fields}`
   let result = await request(url, headers)
 
